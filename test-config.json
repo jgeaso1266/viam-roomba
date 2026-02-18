@@ -1,0 +1,14 @@
+{
+  "components": [
+    {
+      "name": "roomba",
+      "model": "jalen:viam-roomba:base",
+      "type": "base",
+      "attributes": {
+        "serial_port": "/dev/ttyUSB0",
+        "width_mm": 235,
+        "wheel_circumference_mm": 220
+      }
+    }
+  ]
+}
