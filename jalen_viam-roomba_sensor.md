@@ -1,6 +1,6 @@
 # Model jalen:viam-roomba:sensor
 
-A Viam sensor component for the iRobot Roomba 650/655 that exposes all Roomba Open Interface sensor data. Returns real-time readings for bump sensors, cliff sensors, battery state, encoder counts, and more.
+A Viam sensor component for the iRobot Roomba 650/655 that exposes Roomba Open Interface sensor data. Returns real-time readings for bump sensors, cliff sensors, battery state, OI mode, and more.
 
 ## Configuration
 
