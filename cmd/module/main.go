@@ -1,13 +1,17 @@
 package main
 
 import (
-	"viamroomba"
+	viamroomba "viamroomba"
+
+	base "go.viam.com/rdk/components/base"
+	"go.viam.com/rdk/components/sensor"
 	"go.viam.com/rdk/module"
 	"go.viam.com/rdk/resource"
-	base "go.viam.com/rdk/components/base"
 )
 
 func main() {
-	// ModularMain can take multiple APIModel arguments, if your module implements multiple models.
-	module.ModularMain(resource.APIModel{ base.API, viamroomba.Base})
+	module.ModularMain(
+		resource.APIModel{API: base.API, Model: viamroomba.Base},
+		resource.APIModel{API: sensor.API, Model: viamroomba.Sensor},
+	)
 }

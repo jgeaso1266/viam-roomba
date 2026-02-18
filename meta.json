@@ -3,12 +3,17 @@
   "module_id": "jalen:viam-roomba",
   "visibility": "public",
   "url": "https://github.com/jgeaso1266/viam-roomba",
-  "description": "Modular base component: base",
+  "description": "Modular base and sensor components for the iRobot Roomba 650/655",
   "models": [
     {
       "api": "rdk:component:base",
       "model": "jalen:viam-roomba:base",
       "markdown_link": "jalen_viam-roomba_base.md"
+    },
+    {
+      "api": "rdk:component:sensor",
+      "model": "jalen:viam-roomba:sensor",
+      "markdown_link": "jalen_viam-roomba_sensor.md"
     }
   ],
   "applications": null,
