@@ -48,6 +48,14 @@ Switches the Roomba back to Safe mode, re-enabling safety features.
 { "command": "enter_safe_mode" }
 ```
 
+### `enter_passive_mode`
+
+Switches the Roomba to Passive mode. In Passive mode the OI listens for commands but does not accept movement or actuator commands. Use this to allow the Roomba to charge normally on the dock — the Roomba will only charge when the OI is in Passive mode.
+
+```json
+{ "command": "enter_passive_mode" }
+```
+
 ### `seek_dock`
 
 Sends the Roomba to its charging dock.

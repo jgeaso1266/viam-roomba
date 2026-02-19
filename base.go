@@ -326,6 +326,13 @@ func (s *viamRoombaBase) DoCommand(ctx context.Context, cmd map[string]interface
 		s.logger.Info("Entered Safe mode (safety features enabled)")
 		return map[string]interface{}{"status": "safe_mode_enabled"}, nil
 
+	case "enter_passive_mode":
+		if err := s.conn.roomba.Passive(); err != nil {
+			return nil, fmt.Errorf("failed to enter Passive mode: %w", err)
+		}
+		s.logger.Info("Entered Passive mode (charging allowed)")
+		return map[string]interface{}{"status": "passive_mode_enabled"}, nil
+
 	case "seek_dock":
 		if err := s.conn.roomba.SeekDock(); err != nil {
 			return nil, fmt.Errorf("failed to seek dock: %w", err)
