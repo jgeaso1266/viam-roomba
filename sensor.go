@@ -101,7 +101,7 @@ var sensorPackets = []byte{
 var chargingStates = []string{"not_charging", "reconditioning", "full_charging", "trickle_charging", "waiting", "charging_fault"}
 var oiModes = []string{"off", "passive", "safe", "full"}
 
-func (s *viamRoombaSensor) Readings(ctx context.Context, extra map[string]interface{}) (map[string]interface{}, error) {
+func (s *viamRoombaSensor) Readings(ctx context.Context, extra map[string]any) (map[string]any, error) {
 	s.conn.mu.Lock()
 	defer s.conn.mu.Unlock()
 
@@ -118,7 +118,7 @@ func (s *viamRoombaSensor) Readings(ctx context.Context, extra map[string]interf
 	i16 := func(idx int) int16 { return int16(binary.BigEndian.Uint16(data[idx])) }
 	u16 := func(idx int) uint16 { return binary.BigEndian.Uint16(data[idx]) }
 
-	readings := map[string]interface{}{}
+	readings := map[string]any{}
 
 	// Packet 7: Bumps and Wheel Drops
 	bumps := b(0)
@@ -212,7 +212,7 @@ func (s *viamRoombaSensor) Readings(ctx context.Context, extra map[string]interf
 	return readings, nil
 }
 
-func (s *viamRoombaSensor) DoCommand(ctx context.Context, cmd map[string]interface{}) (map[string]interface{}, error) {
+func (s *viamRoombaSensor) DoCommand(ctx context.Context, cmd map[string]any) (map[string]any, error) {
 	return nil, nil
 }
 

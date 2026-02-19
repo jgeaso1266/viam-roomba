@@ -3,6 +3,7 @@ package viamroomba
 import (
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/parabolala/go-roomba"
 )
@@ -34,6 +35,7 @@ func acquireConn(serialPort string) (*roombaConn, error) {
 		return nil, fmt.Errorf("failed to start OI on %s: %w", serialPort, err)
 	}
 	conn := &roombaConn{roomba: r, refs: 1}
+	conn.setReadTimeout(2 * time.Second)
 	connections[serialPort] = conn
 	return conn, nil
 }

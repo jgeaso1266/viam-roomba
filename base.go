@@ -87,12 +87,20 @@ func NewBase(ctx context.Context, deps resource.Dependencies, name resource.Name
 		return nil, err
 	}
 
+	// Only enter Safe mode if the OI is currently off (mode == 0).
+	// If it's already in Passive/Safe/Full, leave the current mode alone so
+	// that a component rebuild (AlwaysRebuild) doesn't silently override a
+	// mode the user intentionally set (e.g. Passive for charging).
 	conn.mu.Lock()
-	if err := conn.roomba.Safe(); err != nil {
-		conn.mu.Unlock()
-		cancelFunc()
-		releaseConn(conf.SerialPort)
-		return nil, fmt.Errorf("failed to enter Safe mode: %w", err)
+	modeData, modeErr := conn.roomba.Sensors(35)
+	if modeErr != nil || len(modeData) == 0 || modeData[0] == 0 {
+		// OI is off (or unreadable) — send Safe to start it up.
+		if err := conn.roomba.Safe(); err != nil {
+			conn.mu.Unlock()
+			cancelFunc()
+			releaseConn(conf.SerialPort)
+			return nil, fmt.Errorf("failed to enter Safe mode: %w", err)
+		}
 	}
 	conn.mu.Unlock()
 
@@ -131,7 +139,7 @@ func (s *viamRoombaBase) Name() resource.Name {
 // MoveStraight moves the robot straight a given distance at a given speed.
 // If a distance or speed of zero is given, the base will stop.
 // This method blocks until completed or cancelled.
-func (s *viamRoombaBase) MoveStraight(ctx context.Context, distanceMm int, mmPerSec float64, extra map[string]interface{}) error {
+func (s *viamRoombaBase) MoveStraight(ctx context.Context, distanceMm int, mmPerSec float64, extra map[string]any) error {
 	ctx, done := s.opMgr.New(ctx)
 	defer done()
 
@@ -183,7 +191,7 @@ func (s *viamRoombaBase) MoveStraight(ctx context.Context, distanceMm int, mmPer
 // If a speed of 0 the base will stop.
 // Given a positive speed and a positive angle, the base turns to the left (for built-in RDK drivers).
 // This method blocks until completed or cancelled.
-func (s *viamRoombaBase) Spin(ctx context.Context, angleDeg float64, degsPerSec float64, extra map[string]interface{}) error {
+func (s *viamRoombaBase) Spin(ctx context.Context, angleDeg float64, degsPerSec float64, extra map[string]any) error {
 	ctx, done := s.opMgr.New(ctx)
 	defer done()
 
@@ -228,7 +236,7 @@ func (s *viamRoombaBase) Spin(ctx context.Context, angleDeg float64, degsPerSec 
 // SetPower sets the power of the base.
 // For linear power, positive Y moves forwards for built-in RDK drivers.
 // For angular power, positive Z turns to the left for built-in RDK drivers.
-func (s *viamRoombaBase) SetPower(ctx context.Context, linear r3.Vector, angular r3.Vector, extra map[string]interface{}) error {
+func (s *viamRoombaBase) SetPower(ctx context.Context, linear r3.Vector, angular r3.Vector, extra map[string]any) error {
 	const maxWheelSpeed = 500.0
 	maxAngularDegPerSec := maxWheelSpeed * 180.0 / (math.Pi * float64(s.widthMM) / 2.0)
 
@@ -241,7 +249,7 @@ func (s *viamRoombaBase) SetPower(ctx context.Context, linear r3.Vector, angular
 // SetVelocity sets the velocity of the base.
 // linear is in mmPerSec (positive Y moves forwards for built-in RDK drivers).
 // angular is in degsPerSec (positive Z turns to the left for built-in RDK drivers).
-func (s *viamRoombaBase) SetVelocity(ctx context.Context, linear r3.Vector, angular r3.Vector, extra map[string]interface{}) error {
+func (s *viamRoombaBase) SetVelocity(ctx context.Context, linear r3.Vector, angular r3.Vector, extra map[string]any) error {
 	s.conn.mu.Lock()
 	defer s.conn.mu.Unlock()
 
@@ -290,7 +298,7 @@ func (s *viamRoombaBase) SetVelocity(ctx context.Context, linear r3.Vector, angu
 	return nil
 }
 
-func (s *viamRoombaBase) Stop(ctx context.Context, extra map[string]interface{}) error {
+func (s *viamRoombaBase) Stop(ctx context.Context, extra map[string]any) error {
 	s.conn.mu.Lock()
 	defer s.conn.mu.Unlock()
 
@@ -302,7 +310,7 @@ func (s *viamRoombaBase) Stop(ctx context.Context, extra map[string]interface{})
 	return nil
 }
 
-func (s *viamRoombaBase) DoCommand(ctx context.Context, cmd map[string]interface{}) (map[string]interface{}, error) {
+func (s *viamRoombaBase) DoCommand(ctx context.Context, cmd map[string]any) (map[string]any, error) {
 	s.conn.mu.Lock()
 	defer s.conn.mu.Unlock()
 
@@ -317,28 +325,28 @@ func (s *viamRoombaBase) DoCommand(ctx context.Context, cmd map[string]interface
 			return nil, fmt.Errorf("failed to enter Full mode: %w", err)
 		}
 		s.logger.Info("Entered Full mode (safety features disabled)")
-		return map[string]interface{}{"status": "full_mode_enabled"}, nil
+		return map[string]any{"status": "full_mode_enabled"}, nil
 
 	case "enter_safe_mode":
 		if err := s.conn.roomba.Safe(); err != nil {
 			return nil, fmt.Errorf("failed to enter Safe mode: %w", err)
 		}
 		s.logger.Info("Entered Safe mode (safety features enabled)")
-		return map[string]interface{}{"status": "safe_mode_enabled"}, nil
+		return map[string]any{"status": "safe_mode_enabled"}, nil
 
 	case "enter_passive_mode":
 		if err := s.conn.roomba.Passive(); err != nil {
 			return nil, fmt.Errorf("failed to enter Passive mode: %w", err)
 		}
 		s.logger.Info("Entered Passive mode (charging allowed)")
-		return map[string]interface{}{"status": "passive_mode_enabled"}, nil
+		return map[string]any{"status": "passive_mode_enabled"}, nil
 
 	case "seek_dock":
 		if err := s.conn.roomba.SeekDock(); err != nil {
 			return nil, fmt.Errorf("failed to seek dock: %w", err)
 		}
 		s.logger.Info("Seeking charging dock")
-		return map[string]interface{}{"status": "seeking_dock"}, nil
+		return map[string]any{"status": "seeking_dock"}, nil
 
 	case "clean":
 		if err := s.conn.roomba.Clean(); err != nil {
@@ -379,7 +387,7 @@ func (s *viamRoombaBase) IsMoving(ctx context.Context) (bool, error) {
 }
 
 // Properties returns the width, turning radius, and wheel circumference of the physical base in meters.
-func (s *viamRoombaBase) Properties(ctx context.Context, extra map[string]interface{}) (base.Properties, error) {
+func (s *viamRoombaBase) Properties(ctx context.Context, extra map[string]any) (base.Properties, error) {
 	return base.Properties{
 		WidthMeters:              float64(s.widthMM) / 1000.0,
 		TurningRadiusMeters:      0.0, // Differential drive can turn in place
