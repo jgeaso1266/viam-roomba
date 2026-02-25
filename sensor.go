@@ -77,7 +77,7 @@ var sensorPackets = []byte{
 	13, // Virtual Wall
 	14, // Overcurrents
 	15, // Dirt Detect
-	17, // IR Opcode
+	17, // IR Opcode Omnidirectional Receiver
 	18, // Buttons
 	19, // Distance (mm, signed)
 	20, // Angle (degrees, signed)
@@ -96,8 +96,8 @@ var sensorPackets = []byte{
 	35, // OI Mode
 	39, // Requested Velocity (mm/s, signed)
 	40, // Requested Radius (mm, signed)
-	52, // Infrared Character Left
-	53, // Infrared Character Right
+	52, // IR Opcode Left Receiver
+	53, // IR Opcode Right Receiver
 }
 
 var chargingStates = []string{"not_charging", "reconditioning", "full_charging", "trickle_charging", "waiting", "charging_fault"}
@@ -149,8 +149,10 @@ func (s *viamRoombaSensor) Readings(ctx context.Context, extra map[string]any) (
 	// Packet 15: Dirt Detect
 	readings["dirt_detect"] = int(b(8))
 
-	// Packet 17: IR Opcode
-	readings["ir_opcode"] = int(b(9))
+	// Packet 17, 52-53: IR Opcodes
+	readings["ir_opcode_omni"] = int(b(9))
+	readings["ir_opcode_left"] = int(b(52))
+	readings["ir_opcode_right"] = int(b(53))
 
 	// Packet 18: Buttons
 	buttons := b(10)
@@ -210,10 +212,6 @@ func (s *viamRoombaSensor) Readings(ctx context.Context, extra map[string]any) (
 	// Packets 39-40: Requested motion
 	readings["requested_velocity_mms"] = int(i16(26))
 	readings["requested_radius_mm"] = int(i16(27))
-
-	// Packets 52-53: Infrared Character Left and Right
-	readings["infrared_character_left"] = int(b(28))
-	readings["infrared_character_right"] = int(b(29))
 
 	return readings, nil
 }
