@@ -151,8 +151,8 @@ func (s *viamRoombaSensor) Readings(ctx context.Context, extra map[string]any) (
 
 	// Packet 17, 52-53: IR Opcodes
 	readings["ir_opcode_omni"] = int(b(9))
-	readings["ir_opcode_left"] = int(b(52))
-	readings["ir_opcode_right"] = int(b(53))
+	readings["ir_opcode_left"] = int(b(28))
+	readings["ir_opcode_right"] = int(b(29))
 
 	// Packet 18: Buttons
 	buttons := b(10)
