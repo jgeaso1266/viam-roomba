@@ -96,6 +96,8 @@ var sensorPackets = []byte{
 	35, // OI Mode
 	39, // Requested Velocity (mm/s, signed)
 	40, // Requested Radius (mm, signed)
+	52, // Infrared Character Left
+	53, // Infrared Character Right
 }
 
 var chargingStates = []string{"not_charging", "reconditioning", "full_charging", "trickle_charging", "waiting", "charging_fault"}
@@ -208,6 +210,10 @@ func (s *viamRoombaSensor) Readings(ctx context.Context, extra map[string]any) (
 	// Packets 39-40: Requested motion
 	readings["requested_velocity_mms"] = int(i16(26))
 	readings["requested_radius_mm"] = int(i16(27))
+
+	// Packets 52-53: Infrared Character Left and Right
+	readings["infrared_character_left"] = int(b(28))
+	readings["infrared_character_right"] = int(b(29))
 
 	return readings, nil
 }
