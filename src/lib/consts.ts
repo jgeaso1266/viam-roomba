@@ -1,0 +1,1 @@
+export const DEFAULT_PART_ID = 'DEFAULT_PART_ID';
