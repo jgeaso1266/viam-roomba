@@ -34,3 +34,15 @@ all: test module.tar.gz
 
 setup:
 	go mod tidy
+
+clean:
+	rm -rf bin dist module.tar.gz
+
+node_modules: package.json
+	npm install
+
+dist/index.html: node_modules src/*
+	npm run build
+
+frontend: dist/index.html viam-app-meta.json
+	@./etc/frontend.sh

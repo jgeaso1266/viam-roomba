@@ -1,8 +1,53 @@
-# Module viam-roomba
+# sv
 
-A Viam module that integrates the iRobot Roomba 650/655 as a controllable base component using the Roomba Open Interface (OI) serial protocol.
+Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
 
-## Models
+## Creating a project
 
-- [`jalen:viam-roomba:base`](jalen_viam-roomba_base.md) - Base component for the iRobot Roomba 650/655
-- [`jalen:viam-roomba:sensor`](jalen_viam-roomba_sensor.md) - Sensor component exposing all Roomba OI sensor readings
+If you're seeing this, you've probably already done this step. Congrats!
+
+```sh
+# create a new project
+npx sv create my-app
+```
+
+To recreate this project with the same configuration:
+
+```sh
+# recreate this project
+npx sv create --template minimal --types ts --add prettier eslint tailwindcss="plugins:typography,forms" --install npm ./
+```
+
+## Developing
+
+Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+
+```sh
+npm run dev
+
+# or start the server and open the app in a new browser tab
+npm run dev -- --open
+```
+
+## Building
+
+To create a production version of your app:
+
+```sh
+npm run build
+```
+
+You can preview the production build with `npm run preview`.
+
+> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+
+
+# Deploying roomba go module
+
+Currently we deploy the module using hot reload `viam module relaod --part-id <PART-ID>
+
+# Deploying APP
+
+Currently we deploy the viam app module
+
+Currently this is set up as a seperate module from the actual roomba code, to deploy just run `make frontend`

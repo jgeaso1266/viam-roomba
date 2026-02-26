@@ -1,0 +1,14 @@
+{
+    "$schema": "https://dl.viam.dev/module.schema.json",
+    "module_id": "dan:viam-roomba-webapp",
+    "visibility": "public",
+    "url": "https://github.com/jgeaso1266/viam-roomba",
+    "description": "Pretty robot frontend for the iRobot Roomba 650/655",
+    "applications": [
+          {
+              "name": "roomba-webapp",
+              "type": "single_machine",
+              "entrypoint": "dist/index.html"
+          }
+      ]
+  }
